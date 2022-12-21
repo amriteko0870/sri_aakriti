@@ -6,11 +6,12 @@ from django.urls import path
 import apiApp.views as views
 import apiApp.auth as auth
 import apiApp.user_data as user
+import apiApp.cart as cart
 
 urlpatterns = [
     #-------------------Filters------------------------------------
-    path('landingPage',views.landingPage,name='landingPage'),
-    path('categoryPage',views.categoryPage,name='categoryPage'),
+    # path('landingPage',views.landingPage,name='landingPage'),
+    # path('categoryPage',views.categoryPage,name='categoryPage'),
     path('categoryPageNew',views.categoryPageNew,name='categoryPageNew'),
     path('productDetails',views.productDetails,name='productDetails'),
     
@@ -21,9 +22,18 @@ urlpatterns = [
     
     path('profileView',user.profileView,name='profileView'),
     path('profileEdit',user.profileEdit,name='profileEdit'),
+    path('addressAdd',user.addressAdd,name='addressAdd'),
+    path('addressEdit',user.addressEdit,name='addressEdit'),
+    path('userWishlist',user.userWishlist,name='userWishlist'),
+    path('getUserWishlist',user.getUserWishlist,name='getUserWishlist'),
+    
+
+    path('addToCart',cart.addToCart,name='addToCart'),
+    path('getUserCart',cart.getUserCart,name='getUserCart'),
+    path('cartQuantityUpdate',cart.cartQuantityUpdate,name='cartQuantityUpdate'),
     
 
 
-    path('',views.index,name='index'),
+    # path('',views.index,name='index'),
 
 ] +static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
