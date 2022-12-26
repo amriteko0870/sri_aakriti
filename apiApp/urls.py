@@ -7,6 +7,7 @@ import apiApp.views as views
 import apiApp.auth as auth
 import apiApp.user_data as user
 import apiApp.cart as cart
+import apiApp.admin_views as admin_views
 
 urlpatterns = [
     #-------------------Filters------------------------------------
@@ -32,7 +33,9 @@ urlpatterns = [
     path('getUserCart',cart.getUserCart,name='getUserCart'),
     path('cartQuantityUpdate',cart.cartQuantityUpdate,name='cartQuantityUpdate'),
     
-
+    
+    path('adminViewAllProducts',admin_views.adminViewAllProducts,name='adminViewAllProducts'),
+    
 
     # path('',views.index,name='index'),
 
