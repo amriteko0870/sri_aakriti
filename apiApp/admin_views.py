@@ -44,8 +44,60 @@ def adminViewAllProducts(request,format=None):
           }
     return Response(res)
 
-# @api_view(['GET'])
-# def adminSingleProduct(request,format=None):
-#     print(request.data)
-#     product_id = request.data['product_id']
-#     data = product_data.objects.filter(id = product_id).d
+@api_view(['GET'])
+def adminSingleProduct(request,format=None):
+    id =  request.GET.get('product_id')
+    obj = product_data.objects.filter(id=id).values().last()
+    res = {}
+    res['product_id'] = obj['id']
+    res['name'] = obj['name']
+    res['gender'] = 'Male' if obj['gender'] == 'M' else ('Female' if obj['gender'] == 'F' else 'Unisex')
+    res['category'] = obj['category']
+    res['image'] = obj['image'].split(',')
+    res['discount'] = obj['discount']
+
+    diamond_quality = obj['diamond_quality'].split(',')
+    weight = obj['weight'].split(',')
+    size = obj['size'].split(',')
+    actual_price = eval(obj['actual_price'])
+    selling_price = eval(obj['selling_price'])
+
+    variants = []
+    mock_id = 1
+    for i in range(len(diamond_quality)):
+      sub_variants = {}
+      sub_variants['diamond_quality'] = diamond_quality[i]
+      sub_variant_data = []
+      for j in range(len(size)):
+        sub_variant_data.append([{
+                                'id': mock_id,
+                                'title':'size',
+                                'value':size[j]
+                                },
+                                {
+                                'id': mock_id+1,
+                                'title':'weight',
+                                'value':weight[j]
+                                },
+                                {
+                                'id': mock_id+2,
+                                'title':'actual_price',
+                                'value':actual_price[i][j]
+                                },
+                                {
+                                'id': mock_id+3,
+                                'title':'selling_price',
+                                'value':selling_price[i][j]
+                                }])
+        mock_id = mock_id + 4
+        sub_variants['sub_variants_data'] = sub_variant_data
+      variants.append(sub_variants)
+      # variants.append({
+      #                   'diamond_quality':diamond_quality[i],
+      #                   'size':size,
+      #                   'weight':weight,
+      #                   'actual_price':actual_price[i],
+      #                   'selling_price':selling_price[i],
+      #                 })
+    res['variants'] = variants
+    return Response(res)

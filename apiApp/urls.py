@@ -35,6 +35,7 @@ urlpatterns = [
     
     
     path('adminViewAllProducts',admin_views.adminViewAllProducts,name='adminViewAllProducts'),
+    path('adminSingleProduct',admin_views.adminSingleProduct,name='adminSingleProduct'),
     
 
     # path('',views.index,name='index'),
