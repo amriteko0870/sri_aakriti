@@ -90,7 +90,7 @@ def adminSingleProduct(request,format=None):
                                 'value':selling_price[i][j]
                                 }])
         mock_id = mock_id + 4
-        sub_variants['sub_variants_data'] = sub_variant_data
+        sub_variants['sub_variants_data'] = sum(sub_variant_data,[])
       variants.append(sub_variants)
       # variants.append({
       #                   'diamond_quality':diamond_quality[i],
