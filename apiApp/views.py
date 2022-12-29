@@ -47,8 +47,10 @@ def categoryPageNew(request,format=None):
         return value.split(',')[0]
     #-------------------------------------------------------------------------------------------
     df = pd.DataFrame(obj)
-    df['actual_price'] = df['actual_price'].apply(func_eval_first_index)
-    df['selling_price'] = df['selling_price'].apply(func_eval_first_index)
+    # df['actual_price'] = df['actual_price'].apply(func_eval_first_index)
+    # df['selling_price'] = df['selling_price'].apply(func_eval_first_index)
+    df['actual_price'] = df['actual_price']
+    df['selling_price'] = df['selling_price']
     df['image'] = df['image'].apply(func_image_first)
     
     resp = df.to_dict(orient='records')
@@ -87,8 +89,41 @@ def productDetails(request,format=None):
     res['size'] = obj['size'].split(',')
     res['weight'] = obj['weight'].split(',')
     res['diamond_quality'] = obj['diamond_quality'].split(',')
-    res['actual_price'] = eval(obj['actual_price'])
-    res['selling_price'] = eval(obj['selling_price'])
+    # res['actual_price'] = eval(obj['actual_price'])
+    # res['selling_price'] = eval(obj['selling_price'])
     res['discount'] = obj['discount']
     res['image'] = obj['image'].split(',')
+
+    res['actual_price'] = obj['actual_price']
+    res['selling_price'] = obj['selling_price']
     return Response(res)
+
+# def index(request):
+#     product_data.objects.all().delete()
+#     df = pd.read_excel('EKO Sri aakriti Products Details (2).xlsx')
+#     for i in range(df.shape[0]):
+#         name = list(df['Product Name'])[i]
+#         category = 'rings'
+#         gender = 'M' if list(df['M or F'])[i] == 'GENTS' else 'F' if list(df['M or F'])[i] == 'LADIES' else 'U'
+#         diamond_quality = list(df['Diamond Quality'])[i]
+#         size = list(df['Size'])[i]
+#         weight = list(df['Weight (PT950/K18)'])[i]
+#         diamond_size = list(df['Diamond  Size'])[i]
+#         diamond_peice = list(df['Diamond pcs'])[i]
+#         diamond_wight = list(df['Diamond Wts'])[i]
+#         status = 'true'
+#         data = product_data(
+#                         name = name,
+#                         category = category,
+#                         gender = gender,
+#                         diamond_quality = diamond_quality,
+#                         size = size,
+#                         weight = weight,
+#                         diamond_size = diamond_size,
+#                         diamond_peice = diamond_peice,
+#                         diamond_wight = diamond_wight,
+#                         status = status,
+#                     )
+#         data.save() 
+#         print(i)
+#     return HttpResponse('Hello')

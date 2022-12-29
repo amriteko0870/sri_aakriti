@@ -26,17 +26,20 @@ class user_address(models.Model):
     phone_no = models.TextField()
 
 class product_data(models.Model):
-    name = models.TextField()
-    category = models.TextField()
-    image = models.TextField()
-    gender = models.TextField()
-    diamond_quality = models.TextField()
-    size = models.TextField()
-    weight = models.TextField()
-    actual_price = models.TextField()
-    selling_price = models.TextField()
-    discount = models.TextField()
-    status = models.TextField()
+    name = models.TextField(blank=True)
+    category = models.TextField(blank=True)
+    image = models.TextField(blank=True)
+    gender = models.TextField(blank=True)
+    diamond_quality = models.TextField(blank=True)
+    diamond_size = models.TextField(blank=True)
+    diamond_peice = models.TextField(blank=True)
+    diamond_wight = models.TextField(blank=True)
+    size = models.TextField(blank=True)
+    weight = models.TextField(blank=True)
+    actual_price = models.TextField(blank=True)
+    selling_price = models.TextField(blank=True)
+    discount = models.TextField(blank=True)
+    status = models.TextField(blank=True)
 
 
 class user_whishlist(models.Model):
