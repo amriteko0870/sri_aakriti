@@ -54,3 +54,16 @@ class user_cart(models.Model):
     diamond_quality = models.TextField()
     quantity = models.TextField()
     updated_at = models.DateTimeField(auto_now=True)
+
+
+# ------------------------------- Pricing -----------------------------------------
+
+class diamond_pricing(models.Model):
+    diamond_quality = models.TextField()
+    diamond_size = models.TextField()
+    diamond_pricing = models.TextField()
+
+class metal_price(models.Model):
+    platinum = models.TextField()
+    gold = models.TextField()
+    making_charges = models.TextField()

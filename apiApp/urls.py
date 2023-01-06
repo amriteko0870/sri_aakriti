@@ -15,6 +15,7 @@ urlpatterns = [
     # path('categoryPage',views.categoryPage,name='categoryPage'),
     path('categoryPageNew',views.categoryPageNew,name='categoryPageNew'),
     path('productDetails',views.productDetails,name='productDetails'),
+    path('priceCalculation',views.priceCalculation,name='priceCalculation'),
     
     
     path('signUp',auth.signUp,name='signUp'),

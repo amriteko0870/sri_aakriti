@@ -27,6 +27,7 @@ from rest_framework.response import Response
 #----------------------------models---------------------------------------------------
 from apiApp.models import product_data
 from apiApp.models import user_whishlist,user_data
+from apiApp.models import metal_price,diamond_pricing
 
 
 #----------------------------extra---------------------------------------------------
@@ -39,7 +40,9 @@ def categoryPageNew(request,format=None):
     cat_name = request.data['category_name']
 
 
-    obj = product_data.objects.filter(category = cat_name).values('id','name','image','diamond_quality','actual_price','selling_price','discount')
+    obj = product_data.objects.filter(category = cat_name).values('id','name','image','diamond_quality','actual_price','selling_price','discount','weight','diamond_quality','diamond_size')
+    price_obj = metal_price.objects.values().last()
+    diamond_obj = diamond_pricing.objects.values()
     # ----------------------- userdefined functions --------------------------------------------
     def func_eval_first_index(value):
         return eval(value)[0][0]
@@ -85,45 +88,90 @@ def productDetails(request,format=None):
     res = {}
     res['product_id'] = obj['id']
     res['name'] = obj['name']
+    res['category'] = obj['category']
     res['gender'] = 'Male' if obj['gender'] == 'M' else ('Female' if obj['gender'] == 'F' else 'Unisex')
     res['size'] = obj['size'].split(',')
     res['weight'] = obj['weight'].split(',')
     res['diamond_quality'] = obj['diamond_quality'].split(',')
-    # res['actual_price'] = eval(obj['actual_price'])
-    # res['selling_price'] = eval(obj['selling_price'])
-    res['discount'] = obj['discount']
+    res['diamond_size'] = obj['diamond_size'].split(',')
     res['image'] = obj['image'].split(',')
+    res['discount'] = '10'
+    # ---------------------------Pricing---------------------------------------------------------------------
+    metal_obj = metal_price.objects.values().last()
+    diamond_obj = diamond_pricing.objects.values()
+    weight_0 = res['weight'][0].split('/')
+    
+    sum = 0
+    metal_sum = 0
+    if len(weight_0)>1:
+        metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight_0[0]) )
+        metal_sum = metal_sum + ( eval(metal_obj['gold']) * eval(weight_0[1]) )
+    else:
+        metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight_0[0]) )
+    sum = sum+ metal_sum
 
-    res['actual_price'] = obj['actual_price']
-    res['selling_price'] = obj['selling_price']
+    if res['diamond_quality'][0] != 'P':
+        diamond_sum = diamond_obj.filter(diamond_quality = res['diamond_quality'][0].strip(),diamond_size = res['diamond_size'][0].strip()).last()
+        sum = sum+ eval(diamond_sum['diamond_pricing'])
+    
+    if len(weight_0)>1:
+        making_price = ( eval(weight_0[0]) + eval(weight_0[1]) ) * eval(metal_obj['making_charges'])
+        sum = sum + making_price
+    else:
+        making_price = eval(weight_0[0]) * eval(metal_obj['making_charges'])
+        sum = sum + making_price
+
+
+    res['actual_price'] = round(sum,2)
+    res['selling_price'] = round(sum,2)
     return Response(res)
 
-# def index(request):
-#     product_data.objects.all().delete()
-#     df = pd.read_excel('EKO Sri aakriti Products Details (2).xlsx')
-#     for i in range(df.shape[0]):
-#         name = list(df['Product Name'])[i]
-#         category = 'rings'
-#         gender = 'M' if list(df['M or F'])[i] == 'GENTS' else 'F' if list(df['M or F'])[i] == 'LADIES' else 'U'
-#         diamond_quality = list(df['Diamond Quality'])[i]
-#         size = list(df['Size'])[i]
-#         weight = list(df['Weight (PT950/K18)'])[i]
-#         diamond_size = list(df['Diamond  Size'])[i]
-#         diamond_peice = list(df['Diamond pcs'])[i]
-#         diamond_wight = list(df['Diamond Wts'])[i]
-#         status = 'true'
-#         data = product_data(
-#                         name = name,
-#                         category = category,
-#                         gender = gender,
-#                         diamond_quality = diamond_quality,
-#                         size = size,
-#                         weight = weight,
-#                         diamond_size = diamond_size,
-#                         diamond_peice = diamond_peice,
-#                         diamond_wight = diamond_wight,
-#                         status = status,
-#                     )
-#         data.save() 
-#         print(i)
-#     return HttpResponse('Hello')
+
+@api_view(['POST'])
+def priceCalculation(request,format=None):
+    try:
+        data = request.data
+        diamond_quality = data['diamond_quality']
+        diamond_size = data['diamond_size']
+        size = data['size']
+        weight = data['weight'].split('/')
+        metal_obj = metal_price.objects.values().last()
+        diamond_obj = diamond_pricing.objects
+        
+        sum = 0
+        metal_sum = 0
+        
+        if diamond_quality != 'P':
+            print('###############',size,weight)
+            diamond_sum = eval(diamond_obj.filter(diamond_quality = diamond_quality,diamond_size = diamond_size.strip()).values_list('diamond_pricing',flat=True)[0])
+            sum = sum + diamond_sum
+        
+
+        if len(weight)>1:
+            metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight[0]) )
+            metal_sum = metal_sum + ( eval(metal_obj['gold']) * eval(weight[1]) )
+        else:
+            metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight[0]) )
+        sum = sum+ metal_sum
+        
+
+        
+        if len(weight)>1:
+            making_price = ( eval(weight[0]) + eval(weight[1]) ) * eval(metal_obj['making_charges'])
+        else:
+            making_price = eval(weight[0]) * eval(metal_obj['making_charges'])
+        sum = sum + making_price
+
+        res = {
+                'status':True,
+                'selling_price':str(round(sum,2)),
+                'actual_price':str(round(sum,2))
+                }
+        return Response(res)
+    except:
+        res = {
+                'status':False,
+                'message':'something went wrong refresh again'
+                }
+        return Response(res)
+
