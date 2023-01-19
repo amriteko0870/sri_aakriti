@@ -259,17 +259,13 @@ def getUserWishlist(request,format=None):
                 }
             return Response(res)
         wishlist_array = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
-        wishlist_data = product_data.objects.filter(id__in = wishlist_array).values('id','name','image','diamond_quality','actual_price','selling_price','discount')
+        wishlist_data = product_data.objects.filter(id__in = wishlist_array).values('id','name','image','diamond_quality','discount')
         # ----------------------- userdefined functions --------------------------------------------
-        def func_eval_first_index(value):
-            return eval(value)[0][0]
         def func_image_first(value):
             return value.split(',')[0]
         #-------------------------------------------------------------------------------------------
         if(len(wishlist_data)>0):
             df = pd.DataFrame(wishlist_data)
-            df['actual_price'] = df['actual_price'].apply(func_eval_first_index)
-            df['selling_price'] = df['selling_price'].apply(func_eval_first_index)
             df['image'] = df['image'].apply(func_image_first)
             
             wishlist_data_res = df.to_dict(orient='records')
@@ -302,17 +298,12 @@ def getUserWishlist(request,format=None):
         wishlist_array = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
         wishlist_data = product_data.objects.filter(id__in = wishlist_array).values('id','name','image','diamond_quality','actual_price','selling_price','discount')
         # ----------------------- userdefined functions --------------------------------------------
-        def func_eval_first_index(value):
-            return eval(value)[0][0]
         def func_image_first(value):
             return value.split(',')[0]
         #-------------------------------------------------------------------------------------------
         if(len(wishlist_data)>0):
             df = pd.DataFrame(wishlist_data)
-            df['actual_price'] = df['actual_price'].apply(func_eval_first_index)
-            df['selling_price'] = df['selling_price'].apply(func_eval_first_index)
             df['image'] = df['image'].apply(func_image_first)
-            
             wishlist_data_res = df.to_dict(orient='records')
             res = {
                     'status':True,

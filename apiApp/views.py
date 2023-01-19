@@ -50,22 +50,16 @@ def categoryPageNew(request,format=None):
         return value.split(',')[0]
     #-------------------------------------------------------------------------------------------
     df = pd.DataFrame(obj)
-    # df['actual_price'] = df['actual_price'].apply(func_eval_first_index)
-    # df['selling_price'] = df['selling_price'].apply(func_eval_first_index)
-    df['actual_price'] = df['actual_price']
-    df['selling_price'] = df['selling_price']
     df['image'] = df['image'].apply(func_image_first)
-    
     resp = df.to_dict(orient='records')
-
     res = {
             'category':cat_name,
             'data':resp,
           }
     try:
         token = request.data['token']
+        user = user_data.objects.get(token = token)
         try:
-            user = user_data.objects.get(token = token)
             wishlist_array = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
             res['wishlist_array'] = wishlist_array
 

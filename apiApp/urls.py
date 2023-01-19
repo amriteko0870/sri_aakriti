@@ -8,6 +8,7 @@ import apiApp.auth as auth
 import apiApp.user_data as user
 import apiApp.cart as cart
 import apiApp.admin_views as admin_views
+import apiApp.checkout as checkout_views
 
 urlpatterns = [
     #-------------------Filters------------------------------------
@@ -20,6 +21,7 @@ urlpatterns = [
     
     path('signUp',auth.signUp,name='signUp'),
     path('login',auth.login,name='login'),
+    path('index',auth.index,name='index'),
     
     
     path('profileView',user.profileView,name='profileView'),
@@ -30,9 +32,13 @@ urlpatterns = [
     path('getUserWishlist',user.getUserWishlist,name='getUserWishlist'),
     
 
+    path('checkout',checkout_views.checkout,name='checkout'),
+
+
     path('addToCart',cart.addToCart,name='addToCart'),
     path('getUserCart',cart.getUserCart,name='getUserCart'),
     path('cartQuantityUpdate',cart.cartQuantityUpdate,name='cartQuantityUpdate'),
+    path('cartProductDelete',cart.cartProductDelete,name='cartProductDelete'),
     
     
     path('adminViewAllProducts',admin_views.adminViewAllProducts,name='adminViewAllProducts'),

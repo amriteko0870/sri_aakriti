@@ -51,7 +51,9 @@ class user_cart(models.Model):
     user_id = models.TextField()
     product_id = models.TextField()
     size = models.TextField()
+    weight = models.TextField()
     diamond_quality = models.TextField()
+    diamond_size = models.TextField()
     quantity = models.TextField()
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -96,3 +96,6 @@ def login(request,format=None):
         return Response(res)
 
         
+
+def index(request):
+    return HttpResponse(make_password('demo12345'))
