@@ -87,37 +87,42 @@ def productDetails(request,format=None):
     res['size'] = obj['size'].split(',')
     res['weight'] = obj['weight'].split(',')
     res['diamond_quality'] = obj['diamond_quality'].split(',')
-    res['diamond_size'] = obj['diamond_size'].split(',')
+    res['diamond_size'] = obj['diamond_size'].split(',') if obj['diamond_size'].split(',')[0] != "nan" else []
     res['image'] = obj['image'].split(',')
     res['discount'] = '10'
+
     # ---------------------------Pricing---------------------------------------------------------------------
-    metal_obj = metal_price.objects.values().last()
-    diamond_obj = diamond_pricing.objects.values()
-    weight_0 = res['weight'][0].split('/')
+    weight = res['weight'][0].split('/')
     
-    sum = 0
-    metal_sum = 0
-    if len(weight_0)>1:
-        metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight_0[0]) )
-        metal_sum = metal_sum + ( eval(metal_obj['gold']) * eval(weight_0[1]) )
-    else:
-        metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight_0[0]) )
-    sum = sum+ metal_sum
-
     if res['diamond_quality'][0] != 'P':
-        diamond_sum = diamond_obj.filter(diamond_quality = res['diamond_quality'][0].strip(),diamond_size = res['diamond_size'][0].strip()).last()
-        sum = sum+ eval(diamond_sum['diamond_pricing'])
+        diamond_quality = res['diamond_quality'][0]
+        diamond_size = res['diamond_size'][0]
     
-    if len(weight_0)>1:
-        making_price = ( eval(weight_0[0]) + eval(weight_0[1]) ) * eval(metal_obj['making_charges'])
-        sum = sum + making_price
+        dm_obj = diamond_pricing.objects.filter(diamond_quality = diamond_quality,diamond_size = diamond_size).values().last()
+        dm_sum = eval(dm_obj['diamond_pricing']) * eval(diamond_size)
     else:
-        making_price = eval(weight_0[0]) * eval(metal_obj['making_charges'])
-        sum = sum + making_price
+        dm_sum = 0
+    
+    mt_obj = metal_price.objects.values().last()
+    if len(weight) == 1:
+        metal_sum = eval(weight[0]) * eval(mt_obj['platinum'])
+        making_charges = eval(weight[0]) * eval(mt_obj['making_charges'])
+    else:
+        metal_sum = eval(weight[0]) * eval(mt_obj['platinum']) + eval(weight[1]) * eval(mt_obj['gold'])
+        making_charges = (eval(weight[0]) + eval(weight[1])) * eval(mt_obj['making_charges'])
 
+    sum = dm_sum + metal_sum + making_charges
+    discount_price = round(sum - sum*0.10)
 
-    res['actual_price'] = round(sum,2)
-    res['selling_price'] = round(sum,2)
+    res['actual_price'] = round(sum)
+    res['selling_price'] = round(discount_price)
+    
+    res['diamond_charges'] = 'N/A' if dm_sum == 0 else str(round(dm_sum))
+    res['metal_charges'] = str(round(metal_sum))
+    res['making_charges'] = str(round(making_charges))
+    res['discount_price'] = str(round(sum*0.10)) 
+    res['total_charges'] = str(round(discount_price))
+
     return Response(res)
 
 
@@ -132,35 +137,35 @@ def priceCalculation(request,format=None):
         metal_obj = metal_price.objects.values().last()
         diamond_obj = diamond_pricing.objects
         
-        sum = 0
-        metal_sum = 0
-        
         if diamond_quality != 'P':
-            print('###############',size,weight)
-            diamond_sum = eval(diamond_obj.filter(diamond_quality = diamond_quality,diamond_size = diamond_size.strip()).values_list('diamond_pricing',flat=True)[0])
-            sum = sum + diamond_sum
+            dm_obj = diamond_pricing.objects.filter(diamond_quality = diamond_quality,diamond_size = diamond_size).values().last()
+            dm_sum = eval(dm_obj['diamond_pricing']) * eval(diamond_size)
+        else:
+            dm_sum = 0
         
 
-        if len(weight)>1:
-            metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight[0]) )
-            metal_sum = metal_sum + ( eval(metal_obj['gold']) * eval(weight[1]) )
+        mt_obj = metal_price.objects.values().last()
+        if len(weight) == 1:
+            metal_sum = eval(weight[0]) * eval(mt_obj['platinum'])
+            making_charges = eval(weight[0]) * eval(mt_obj['making_charges'])
         else:
-            metal_sum = metal_sum + ( eval(metal_obj['platinum']) * eval(weight[0]) )
-        sum = sum+ metal_sum
-        
+            metal_sum = eval(weight[0]) * eval(mt_obj['platinum']) + eval(weight[1]) * eval(mt_obj['gold'])
+            making_charges = (eval(weight[0]) + eval(weight[1])) * eval(mt_obj['making_charges'])
 
-        
-        if len(weight)>1:
-            making_price = ( eval(weight[0]) + eval(weight[1]) ) * eval(metal_obj['making_charges'])
-        else:
-            making_price = eval(weight[0]) * eval(metal_obj['making_charges'])
-        sum = sum + making_price
+        sum = round(dm_sum + metal_sum + making_charges)
+        discount_price = round(sum - sum*0.10)
 
         res = {
                 'status':True,
-                'selling_price':str(round(sum,2)),
-                'actual_price':str(round(sum,2))
+                'selling_price':str(sum),
+                'actual_price':str(discount_price)
                 }
+        res['diamond_charges'] = 'N/A' if dm_sum == 0 else str(round(dm_sum))
+        res['metal_charges'] = str(round(metal_sum))
+        res['making_charges'] = str(round(making_charges))
+        res['discount_price'] = str(round(sum*0.10))
+        res['total_charges'] = str(round(discount_price))
+
         return Response(res)
     except:
         res = {

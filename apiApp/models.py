@@ -69,3 +69,36 @@ class metal_price(models.Model):
     platinum = models.TextField()
     gold = models.TextField()
     making_charges = models.TextField()
+
+
+# -------------------------  Orders ----------------------------------------------------
+
+class order_payment(models.Model):
+    user_id = models.TextField()
+    order_product = models.CharField(max_length=100)
+    order_amount = models.CharField(max_length=25)
+    order_payment_id = models.CharField(max_length=100)
+    isPaid = models.BooleanField(default=False)
+    order_date = models.DateTimeField(auto_now=True)
+    order_status = models.TextField(max_length=1,default='p',choices=(('p','p'),('c','c'),('d','d'),('o','o')))
+    # p placed
+    # d delivered
+    # c canceled
+    # o on the way
+
+class order_details(models.Model):
+    order_id = models.TextField()
+    product_id = models.TextField()
+    size = models.TextField()
+    weight = models.TextField()
+    diamond_quality = models.TextField()
+    diamond_size = models.TextField(blank=True)
+    quantity = models.TextField()
+    platinum = models.TextField()
+    gold = models.TextField()
+    making_charges = models.TextField()
+    diamond = models.TextField()
+    shipping = models.TextField()
+    tax = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+    

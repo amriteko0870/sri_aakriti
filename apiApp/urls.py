@@ -9,6 +9,8 @@ import apiApp.user_data as user
 import apiApp.cart as cart
 import apiApp.admin_views as admin_views
 import apiApp.checkout as checkout_views
+import apiApp.payments as payemnt_views
+import apiApp.orders as order_views
 
 urlpatterns = [
     #-------------------Filters------------------------------------
@@ -33,6 +35,12 @@ urlpatterns = [
     
 
     path('checkout',checkout_views.checkout,name='checkout'),
+
+    path('start_payment',payemnt_views.start_payment,name='start_payment'),
+    path('success',payemnt_views.handle_payment_success,name='handle_payment_success'),
+
+
+    path('order_view',order_views.order_view,name='order_view'),
 
 
     path('addToCart',cart.addToCart,name='addToCart'),

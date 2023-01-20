@@ -136,7 +136,7 @@ def checkout(request,format=None):
         final_sub_total = final_sub_total + single_prod_res['price']
         final_makin_charges = final_makin_charges + making_charges
 
-    estimated_total = round(final_sub_total) + round(final_makin_charges)
+    estimated_total = round(final_sub_total)
     cal_tax = estimated_total * tax //100
     estimated_total = estimated_total + cal_tax + round(shipping)
     checkout = {
@@ -158,7 +158,7 @@ def checkout(request,format=None):
                         },
                 'total': {
                                 'title':'Estimated Total',
-                                'amount': str(round(estimated_total))
+                                'amount': str(round(estimated_total)//1000)
                             },
                 }
     item['content'] = product_list
@@ -168,5 +168,6 @@ def checkout(request,format=None):
     
     return Response(res)
     
+
 
     

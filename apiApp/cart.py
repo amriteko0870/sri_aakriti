@@ -137,16 +137,16 @@ def getUserCart(request,format=None):
         product_list.append(single_prod_res)
 
         final_sub_total = final_sub_total + single_prod_res['price']
-        final_makin_charges = final_makin_charges + making_charges
+        final_makin_charges = final_makin_charges + making_charges * eval(i['quantity'])
 
 
-    estimated_total = round(final_sub_total) + round(final_makin_charges)
+    estimated_total = round(final_sub_total)
     cal_tax = estimated_total * tax //100
     estimated_total = estimated_total + cal_tax + round(shipping)
     checkout = {
                 'sub_total':{
                                 'title':'Sub Total', 
-                                'amount': str(round(final_sub_total)),
+                                'amount': str(round(final_sub_total) - round(final_makin_charges)),
                             },
                 'making_charges':{
                                 'title':'Making Charges', 
