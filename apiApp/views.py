@@ -88,7 +88,8 @@ def productDetails(request,format=None):
     res['weight'] = obj['weight'].split(',')
     res['diamond_quality'] = obj['diamond_quality'].split(',')
     res['diamond_size'] = obj['diamond_size'].split(',') if obj['diamond_size'].split(',')[0] != "nan" else []
-    res['image'] = obj['image'].split(',')
+    res['image'] = obj['image'].split(',')[0]
+    res['image_all'] = obj['image'].split(',')
     res['discount'] = '10'
 
     # ---------------------------Pricing---------------------------------------------------------------------
@@ -98,7 +99,9 @@ def productDetails(request,format=None):
         diamond_quality = res['diamond_quality'][0]
         diamond_size = res['diamond_size'][0]
     
-        dm_obj = diamond_pricing.objects.filter(diamond_quality = diamond_quality,diamond_size = diamond_size).values().last()
+        dm_obj = diamond_pricing.objects.filter(diamond_quality = diamond_quality.strip(),diamond_size = diamond_size.strip()).values().last()
+        print(diamond_size)
+        print(dm_obj)
         dm_sum = eval(dm_obj['diamond_pricing']) * eval(diamond_size)
     else:
         dm_sum = 0
@@ -174,3 +177,25 @@ def priceCalculation(request,format=None):
                 }
         return Response(res)
 
+
+
+def index(request):
+    products = product_data.objects.values()
+    def img_path(x):
+        return 'media/products/'+x
+    c = 0
+    for i in products:
+        name = i['name']
+        products_list = os.listdir('media/products')
+        df = pd.DataFrame({'images':products_list})
+        df = df.loc[df['images'].str.contains(name, case=False)]
+        df['images'] = df['images'].apply(img_path)
+        if len(list(df['images'])) > 0:
+            images = ','.join(list(df['images']))
+        else:
+            images = 'media/products/mock_product.png'
+        product_data.objects.filter(id = i['id']).update(image = images)
+        c = c + 1
+        print(c)
+
+    return HttpResponse('Hello')

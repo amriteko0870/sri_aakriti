@@ -107,7 +107,7 @@ def checkout(request,format=None):
         single_prod_res = {}
         prod_data = products.filter(id = i['product_id']).last()
         single_prod_res['id'] = i['product_id']
-        single_prod_res['image'] = prod_data['image']
+        single_prod_res['image'] = prod_data['image'].split(',')[0]
         single_prod_res['title'] = prod_data['name']
         single_prod_res['qty'] = i['quantity']
 
@@ -134,7 +134,7 @@ def checkout(request,format=None):
         product_list.append(single_prod_res)
 
         final_sub_total = final_sub_total + single_prod_res['price']
-        final_makin_charges = final_makin_charges + making_charges
+        final_makin_charges = final_makin_charges + making_charges * eval(i['quantity'])
 
     estimated_total = round(final_sub_total)
     cal_tax = estimated_total * tax //100

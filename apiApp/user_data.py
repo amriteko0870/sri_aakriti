@@ -26,6 +26,8 @@ from rest_framework.response import Response
 from apiApp.models import user_data,user_address
 from apiApp.models import user_whishlist
 from apiApp.models import product_data
+from apiApp.models import order_payment
+from apiApp.models import order_details
 
 #----------------------------extra---------------------------------------------------
 import simplejson as json
@@ -49,14 +51,35 @@ def profileView(request,format=None):
         add_res = user_address.objects.filter(user_id = user.id)\
                                       .values('id','add_line_1','add_line_2',
                                               'landmark','city','state',
-                                              'country','pincode')                          
+                                              'country','pincode') 
+
+
+        def deliveryStatus(x):
+            if x  == 'd':
+                return 'Delivered'
+            if x  == 'p':
+                return 'Placed'
+            if x  == 'c':
+                return 'Cancelled'
+            if x  == 'o':
+                return 'On the way'
+        orders = order_payment.objects.filter(user_id = user.id).values('id','order_status','order_amount')
+        orders = pd.DataFrame(orders)
+        orders['order_status'] = orders['order_status'].apply(deliveryStatus)
+        orders = orders.to_dict(orient='record')
+
+
+        wishlist = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
+        wishlist_data = product_data.objects.filter(id__in = wishlist).values('id','image','name','category')
+
+
         res = {
                 'status':True,
                 'message':'Response created successfully',
                 'user':user_res,
-                'address':{
-                            'content':add_res
-                          }
+                'address': add_res,
+                'my_orders':orders,
+                'wishlist':wishlist_data,
               }
     except:
         res = {
@@ -234,17 +257,25 @@ def userWishlist(request,format=None):
                                     user_id = user.id,
                                 )
             data.save()
+            wishlist_array = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
+        
+            res = {
+                    'status':True,
+                    'message':'Product added to whishlist',
+                    'wishlist_array':wishlist_array,
+                }
+            return Response(res)
         else:
             user_whishlist.objects.filter(user_id = user.id,product_id=product_id).delete()
         
-        wishlist_array = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
-        
-        res = {
-                'status':True,
-                'message':'Product added to whishlist',
-                'wishlist_array':wishlist_array,
-              }
-        return Response(res)
+            wishlist_array = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
+            
+            res = {
+                    'status':True,
+                    'message':'Product removed from whishlist',
+                    'wishlist_array':wishlist_array,
+                }
+            return Response(res)
 
 @api_view(['POST',"DELETE"])
 def getUserWishlist(request,format=None):

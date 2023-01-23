@@ -12,7 +12,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['POST'])
 def start_payment(request):
-    order_payment.objects.all().delete()
     amount = request.data['amount']
     name = request.data['name']
     token = request.data['token']
@@ -109,7 +108,6 @@ def handle_payment_success(request):
     userId = order.user_id
     orderId = order.id
     cart_data = user_cart.objects.filter(user_id = userId)
-    order_details.objects.all().delete()
     metal_obj = metal_price.objects.values().last()
     diamond_obj = diamond_pricing.objects.values()
     for i in cart_data.values():

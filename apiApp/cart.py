@@ -110,7 +110,7 @@ def getUserCart(request,format=None):
         prod_data = products.filter(id = i['product_id']).last()
         single_prod_res['cart_product_id'] = i['id']
         single_prod_res['id'] = i['product_id']
-        single_prod_res['image'] = prod_data['image']
+        single_prod_res['image'] = prod_data['image'].split(',')[0]
         single_prod_res['title'] = prod_data['name']
         single_prod_res['qty'] = i['quantity']
 
@@ -118,7 +118,7 @@ def getUserCart(request,format=None):
             diamond_quality = i['diamond_quality']
             diamond_size = i['diamond_size']
         
-            dm_obj = diamond_pricing.objects.filter(diamond_quality = diamond_quality,diamond_size = diamond_size).values().last()
+            dm_obj = diamond_pricing.objects.filter(diamond_quality = diamond_quality.strip(),diamond_size = diamond_size.strip()).values().last()
             dm_sum = eval(dm_obj['diamond_pricing']) * eval(diamond_size)
         else:
             dm_sum = 0
