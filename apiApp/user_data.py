@@ -64,11 +64,13 @@ def profileView(request,format=None):
             if x  == 'o':
                 return 'On the way'
         orders = order_payment.objects.filter(user_id = user.id).values('id','order_status','order_amount')
-        orders = pd.DataFrame(orders)
-        orders['order_status'] = orders['order_status'].apply(deliveryStatus)
-        orders = orders.to_dict(orient='record')
+        if len(orders) > 0:
+            orders = pd.DataFrame(orders)
+            orders['order_status'] = orders['order_status'].apply(deliveryStatus)
+            orders = orders.to_dict(orient='record')
 
-
+        else:
+            orders = []
         wishlist = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
         wishlist_data = product_data.objects.filter(id__in = wishlist).values('id','image','name','category')
 
@@ -139,7 +141,7 @@ def addressAdd(request,format=None):
                 'message':'Something went wrong'
               }
         return Response(res)
-
+    user_address.objects.all().delete()
     data = user_address(
                         user_id = user.id,
                         add_line_1 = add_line_1,

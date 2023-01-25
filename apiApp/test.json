@@ -1,0 +1,33 @@
+{
+  "product_id": 893,
+  "name": "SA-BAND-057",
+  "gender": "Male",
+  "category": "rings",
+  "image": ["media/products/SA-BAND-057.png"],
+  "discount": "",
+  "diamond_quality": "GH-VS/SI & EF-VVS",
+  "diamond_quality_all": ["GH-VS/SI", "EF-VVS", "GH-VS/SI & EF-VVS", "P"],
+  "diamond_size": ["0.10 ", "0.20"],
+  "diamond_size_all": [
+    "0.01",
+    "0.02",
+    "0.03",
+    "0.04",
+    "0.05",
+    "0.06",
+    "0.07",
+    "0.08",
+    "0.09",
+    "0.10",
+    "0.20"
+  ],
+  "size_weight": [
+    { "size": "14", "weight": "8.65", "id": 0 },
+    { "size": "15", "weight": "9.07", "id": 1 },
+    { "size": "17", "weight": "7.71", "id": 2 },
+    { "size": "18", "weight": "7.78", "id": 3 },
+    { "size": "22", "weight": "8.06", "id": 4 },
+    { "size": "28", "weight": "10", "id": 5 },
+    { "size": "29", "weight": "12.5", "id": 6 }
+  ]
+}

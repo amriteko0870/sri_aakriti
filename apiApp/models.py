@@ -2,8 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-
-
 class user_data(models.Model):
     name = models.TextField()
     email = models.TextField()
@@ -80,11 +78,9 @@ class order_payment(models.Model):
     order_payment_id = models.CharField(max_length=100)
     isPaid = models.BooleanField(default=False)
     order_date = models.DateTimeField(auto_now=True)
-    order_status = models.TextField(max_length=1,default='p',choices=(('p','p'),('c','c'),('d','d'),('o','o')))
-    # p placed
-    # d delivered
-    # c canceled
-    # o on the way
+    order_status = models.TextField(max_length=1,default='p',choices=(('p','p'),('c','c'),('d','d'),('o','o'))) # p placed # d delivered # c canceled # o on the way
+    # address_id = m
+
 
 class order_details(models.Model):
     order_id = models.TextField()

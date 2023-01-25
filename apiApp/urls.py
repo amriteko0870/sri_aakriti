@@ -52,6 +52,11 @@ urlpatterns = [
     
     path('adminViewAllProducts',admin_views.adminViewAllProducts,name='adminViewAllProducts'),
     path('adminSingleProduct',admin_views.adminSingleProduct,name='adminSingleProduct'),
+    path('sizeWeight',admin_views.sizeWeight,name='sizeWeight'),
+    path('diamondSize',admin_views.diamondSize,name='diamondSize'),
+    path('adminViewAllOrders',admin_views.adminViewAllOrders,name='adminViewAllOrders'),
+    path('adminSingleOrder',admin_views.adminSingleOrder,name='adminSingleOrder'),
+    
     
 
     # path('',views.index,name='index'),

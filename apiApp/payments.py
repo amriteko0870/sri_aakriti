@@ -98,6 +98,7 @@ def handle_payment_success(request):
     check = client.utility.verify_payment_signature(data)
 
     if not check:
+        order.delete()
         print("Redirect to error url or error page")
         return Response({'error': 'Something went wrong'})
  
