@@ -54,8 +54,14 @@ urlpatterns = [
     path('adminSingleProduct',admin_views.adminSingleProduct,name='adminSingleProduct'),
     path('sizeWeight',admin_views.sizeWeight,name='sizeWeight'),
     path('diamondSize',admin_views.diamondSize,name='diamondSize'),
+    path('adminAddNewProduct',admin_views.adminAddNewProduct,name='adminAddNewProduct'),
+    path('adminAddImageNewProduct',admin_views.adminAddImageNewProduct,name='adminAddImageNewProduct'),
+    path('adminImageNameUpdate',admin_views.adminImageNameUpdate,name='adminImageNameUpdate'),
     path('adminViewAllOrders',admin_views.adminViewAllOrders,name='adminViewAllOrders'),
     path('adminSingleOrder',admin_views.adminSingleOrder,name='adminSingleOrder'),
+    path('adminAddNewOrder',admin_views.adminAddNewOrder,name='adminAddNewOrder'),
+    
+    
     
     
 

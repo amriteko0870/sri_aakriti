@@ -37,7 +37,7 @@ class product_data(models.Model):
     actual_price = models.TextField(blank=True)
     selling_price = models.TextField(blank=True)
     discount = models.TextField(blank=True)
-    status = models.TextField(blank=True)
+    status = models.BooleanField()
 
 
 class user_whishlist(models.Model):
