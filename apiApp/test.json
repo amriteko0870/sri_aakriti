@@ -1,36 +1,28 @@
 {
-  "customer_name": "",
-  "customer_phone": "",
-  "customer_address": "",
-  "customer_email": "",
-  "grand_total": "0",
-  "items": [
-    {
-      "title": "SA-BAND-142",
-      "diamond_quality": "GH-VS/SI",
-      "metal_size": "10",
-      "metal_weight": "9.31",
-      "diamond_charges": "950",
-      "making_charges_1": "16758",
-      "sub_total": "47575"
-    },
-    {
-      "title": "SA-BAND-005",
-      "diamond_quality": "P",
-      "metal_size": "17",
-      "metal_weight": "7.78",
-      "diamond_charges": "0",
-      "making_charges_1": "14004",
-      "sub_total": "38963"
-    },
-    {
-      "title": "SA-BAND-006",
-      "diamond_quality": "GH-VS/SI",
-      "metal_size": "10",
-      "metal_weight": "7.79",
-      "diamond_charges": "950",
-      "making_charges_1": "14022",
-      "sub_total": "39963"
-    }
-  ]
+  "product_id": 1080,
+  "name": "Asphalt",
+  "gender": "Female",
+  "category": "earings",
+  "discount": "",
+  "image_1": "media/products/wallpaperflare.com_wallpaper (3).jpg",
+  "image_2": false,
+  "image_3": false,
+  "image_4": false,
+  "diamond_quality": "EF-VVS",
+  "diamond_quality_all": ["GH-VS/SI", "EF-VVS", "GH-VS/SI & EF-VVS", "P"],
+  "diamond_size": ["0.03"],
+  "diamond_size_all": [
+    "0.01",
+    "0.02",
+    "0.03",
+    "0.04",
+    "0.05",
+    "0.06",
+    "0.07",
+    "0.08",
+    "0.09",
+    "0.10",
+    "0.20"
+  ],
+  "size_weight": [{ "size": "12", "weight": "22", "id": 0 }]
 }

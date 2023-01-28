@@ -79,7 +79,6 @@ class order_payment(models.Model):
     isPaid = models.BooleanField(default=False)
     order_date = models.DateTimeField(auto_now=True)
     order_status = models.TextField(max_length=1,default='p',choices=(('p','p'),('c','c'),('d','d'),('o','o'))) # p placed # d delivered # c canceled # o on the way
-    # address_id = m
 
 
 class order_details(models.Model):

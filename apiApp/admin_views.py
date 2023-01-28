@@ -33,6 +33,7 @@ from apiApp.models import diamond_pricing
 from apiApp.models import order_payment
 from apiApp.models import order_details
 from apiApp.models import user_address
+from apiApp.models import metal_price
 
 #----------------------------extra----------------------------------------------------
 import simplejson as json
@@ -267,6 +268,46 @@ def adminAddNewProduct(request,format=None):
     return Response({'status':True,'message':'product added successfully'})
 
 
+@api_view(['POST'])
+def adminEditSingleProduct(request,format=None):
+  data = request.data
+  prod_obj = product_data.objects.filter(id = data['product_id']).values()
+  name = data['name']
+  gender = 'M' if data['gender'] == 'Male' else ( 'F' if data['gender'] == 'Female' else 'U')
+  category = data['category']
+  diamond_quality = data['diamond_quality']
+  diamond_size = ','.join(data['diamond_size'])
+  image = []
+  if data['image_1']:
+    image.append(data['image_1'])
+  if data['image_2']:
+    image.append(data['image_2'])
+  if data['image_3']:
+    image.append(data['image_3'])
+  if data['image_4']:
+    image.append(data['image_4'])
+  image = ','.join(image)
+  size_weight = pd.DataFrame(data['size_weight'])
+  size = ','.join(list(size_weight['size']))
+  weight = ','.join(list(size_weight['weight']))
+
+  prod_obj.update(
+                    name = name,
+                    gender = gender,
+                    category = category,
+                    diamond_quality = diamond_quality,
+                    diamond_size = diamond_size,
+                    image = image,
+                    size = size,
+                    weight = weight,
+
+                 )
+  res = {
+          'status' : True,
+          'message':'Product updation successfull'
+        }
+  return Response(res)
+
 
 @api_view(['POST'])
 def adminAddImageNewProduct(request,format=None):
@@ -350,12 +391,12 @@ def adminSingleOrder(request,format=None):
       return '0'
   def metalPrice(s,w,pp,gp,qt):
     if len(w.split('/')) > 1:
-      return str(round(( eval(w.split('/')[0]) * eval(pp) + eval(w.split('/')) * eval(gp)) * eval(qt)))
+      return str(round(( eval(w.split('/')[0]) * eval(pp) + eval(w.split('/')[1]) * eval(gp)) * eval(qt)))
     else:
       return str(round(( eval(w.split('/')[0]) * eval(pp)) * eval(qt)))
   def makingPrice(s,w,mp,qt):
     if len(w.split('/')) > 1:
-      return str(round(( eval(w.split('/')[0]) * eval(mp) + eval(w.split('/')) * eval(mp)) * eval(qt)))
+      return str(round(( eval(w.split('/')[0]) * eval(mp) + eval(w.split('/')[1]) * eval(mp)) * eval(qt)))
     else:
       return str(round(( eval(w.split('/')[0]) * eval(mp)) * eval(qt)))
   def subTotal(dc,mc,mkc):
@@ -401,5 +442,117 @@ def adminAddNewOrder(request,format=None):
     res = { 
             'status':True,
             'data': data,
+          }
+    return Response(res)
+  
+
+@api_view(['POST'])
+def adminCreateOrderSelectProduct(request,format=None):
+  if request.method == 'POST':
+    product_id = request.data['product_id']
+    try:
+      product_info = product_data.objects.filter(id = product_id).values().last()
+    except:
+      res = {
+              'status':False,
+              'message':'something went wrong, please try again'
+            }
+      return Response(res)
+    
+    diamond_quality = product_info['diamond_quality'].split(',')
+    diamond_size = product_info['diamond_size'].split(',') if diamond_quality[0] != 'P' else []
+    size = product_info['size'].split(',') 
+    weight = product_info['weight'].split(',')
+
+    res = {
+            'status':True,
+            'data': {
+                      'diamond_quality': diamond_quality,
+                      'diamond_size': diamond_size,
+                      'size': size,
+                      'weight': weight,
+                    }
+          }
+    return Response(res)
+
+
+@api_view(['POST'])
+def adminCreateOrderGetProductInfo(request,format=None):
+    if request.method == 'POST':
+      main_data = request.data
+      data = main_data['data']
+      # items = main_data['items']
+      res = {}
+      # return Response(data)
+
+      def productNameFromId(x):
+        return product_data.objects.filter(id = x).values().last()['name']
+      def productImageFromId(x):
+        return product_data.objects.filter(id = x).values().last()['image'].split(',')[0]
+      def diamondPrice(dq,ds):
+        if dq != 'P':
+          return str(round(eval(diamond_pricing.objects.filter(diamond_quality = dq.strip(),diamond_size = ds.strip()).values().last()['diamond_pricing']) * eval(ds.strip())))
+        else:
+          return '0'
+      def metalPrice(s,w,pp,gp,qt):
+        qt = str(qt)
+        if len(w.split('/')) > 1:
+          return str(round(( eval(w.split('/')[0]) * eval(pp) + eval(w.split('/')[1]) * eval(gp)) * eval(qt)))
+        else:
+          return str(round(( eval(w.split('/')[0]) * eval(pp)) * eval(qt)))
+      def makingPrice(s,w,mp,qt):
+        qt = str(qt)
+        if len(w.split('/')) > 1:
+          return str(round(( eval(w.split('/')[0]) * eval(mp) + eval(w.split('/')[1]) * eval(mp)) * eval(qt)))
+        else:
+          return str(round(( eval(w.split('/')[0]) * eval(mp)) * eval(qt)))
+      def subTotal(dc,mc,mkc):
+        return str(round(eval(dc) + eval(mc) + eval(mkc)))
+      def diamond_size_na(x):
+        return 'N/A' if x == 'undefined' else x
+      metal_obj = metal_price.objects.values().last()
+      try:
+        res['title'] = productNameFromId(data['id'])
+        res['image'] = productImageFromId(data['id'])
+        res['diamond_quality'] = data['diamond_quality']
+        res['diamond_size'] = data['diamond_size'] if res['diamond_quality'] != 'P' else 'N/A'
+        res['metal_size'] = data['size']
+        res['metal_weight'] = data['weight']
+      except:
+        res = {
+                'status':False,
+                'message':'Value required for every field'
+              }
+        return Response(res)
+      res['diamond_charges'] = diamondPrice(res['diamond_quality'],res['diamond_size'])
+      res['metal_charges'] = metalPrice(res['metal_size'],res['metal_weight'],metal_obj['platinum'],metal_obj['gold'],data['quantity'])
+      res['making_charges_1'] = makingPrice(res['metal_size'],res['metal_weight'],metal_obj['making_charges'],data['quantity'])
+      res['sub_total'] = subTotal(res['diamond_charges'],res['metal_charges'],res['making_charges_1'])
+
+      # items.append(res)
+      res = {
+              'status':True,
+              'items':res,
+            }
+
+      return Response(res)
+
+
+@api_view(['POST'])
+def adminCreateOrderFinalPriceCalculation(request,format=None):
+  if request.method == 'POST':
+    data = request.data
+    sum = 0
+    for i in data:
+      sum = sum + eval(i['sub_total'])
+      sum = round(sum)
+    tax = round(sum * 3 / 100)
+    sum = tax + sum
+    shipping = 100
+    res = {
+            'status':True,
+            'tax':"3%",
+            'shipping':str(shipping),
+            'grand_total':str(sum)
           }
     return Response(res)

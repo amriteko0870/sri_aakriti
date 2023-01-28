@@ -55,11 +55,15 @@ urlpatterns = [
     path('sizeWeight',admin_views.sizeWeight,name='sizeWeight'),
     path('diamondSize',admin_views.diamondSize,name='diamondSize'),
     path('adminAddNewProduct',admin_views.adminAddNewProduct,name='adminAddNewProduct'),
+    path('adminEditSingleProduct',admin_views.adminEditSingleProduct,name='adminEditSingleProduct'),
     path('adminAddImageNewProduct',admin_views.adminAddImageNewProduct,name='adminAddImageNewProduct'),
     path('adminImageNameUpdate',admin_views.adminImageNameUpdate,name='adminImageNameUpdate'),
     path('adminViewAllOrders',admin_views.adminViewAllOrders,name='adminViewAllOrders'),
     path('adminSingleOrder',admin_views.adminSingleOrder,name='adminSingleOrder'),
     path('adminAddNewOrder',admin_views.adminAddNewOrder,name='adminAddNewOrder'),
+    path('adminCreateOrderSelectProduct',admin_views.adminCreateOrderSelectProduct,name='adminCreateOrderSelectProduct'),
+    path('adminCreateOrderGetProductInfo',admin_views.adminCreateOrderGetProductInfo,name='adminCreateOrderGetProductInfo'),
+    path('adminCreateOrderFinalPriceCalculation',admin_views.adminCreateOrderFinalPriceCalculation,name='adminCreateOrderFinalPriceCalculation'),
     
     
     
