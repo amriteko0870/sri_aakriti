@@ -342,29 +342,58 @@ def adminImageNameUpdate(request,format=None):
     
 # ----------------------------------- Orders ---------------------------------------------------------------------
 
-@api_view(['GET'])
+@api_view(['GET','PATCH'])
 def adminViewAllOrders(request,format=None):
+  if request.method == 'GET':
+    def emailFromId(x):
+      return user_data.objects.filter(id = x).values().last()['email']
+    def pincodeFromId(x):
+      try:
+        return user_address.objects.filter(user_id = x).values().last()['pincode']
+      except:
+        return ''
+    order_obj = order_payment.objects.values('id','user_id','order_amount','admin_accept_status')
+    if len(order_obj) > 0 : 
+      order_obj = pd.DataFrame(order_obj)
+      order_obj['email'] = order_obj['user_id'].apply(emailFromId)
+      order_obj['pincode'] = order_obj['user_id'].apply(pincodeFromId)
+      order_obj = order_obj.to_dict(orient='records')
+    else:
+      order_obj = []
+    res = {
+            'status':True,
+            'orders': order_obj
+          }
+    return Response(res)
+  
+  if request.method == 'PATCH':
+    data= request.data
+    print(data)
+    id = data['id']
+    type = data['type']
 
-  def emailFromId(x):
-    return user_data.objects.filter(id = x).values().last()['email']
-  def pincodeFromId(x):
-    try:
-      return user_address.objects.filter(user_id = x).values().last()['pincode']
-    except:
-      return ''
-  order_obj = order_payment.objects.values('id','user_id','order_amount')
-  if len(order_obj) > 0 : 
-    order_obj = pd.DataFrame(order_obj)
-    order_obj['email'] = order_obj['user_id'].apply(emailFromId)
-    order_obj['pincode'] = order_obj['user_id'].apply(pincodeFromId)
-    order_obj = order_obj.to_dict(orient='records')
-  else:
-    order_obj = []
-  res = {
-          'status':True,
-          'orders': order_obj
-        }
-  return Response(res)
+    order_obj = order_payment.objects.filter(id = id)
+
+    if type == 'a':
+      order_obj.update(admin_accept_status = 'a')
+      res = {
+              'status':True,
+              'message':'Order status updated'
+            }
+    elif type == 'd':
+      order_obj.update(admin_accept_status = 'd')
+      res = {
+              'status':True,
+              'message':'Order status updated'
+            }
+    else:
+      res = {
+              'status':False,
+              'message':'Something went wrong'
+            }
+    return Response(res)
+  
+
 
 
 @api_view(['GET'])
@@ -426,7 +455,7 @@ def adminSingleOrder(request,format=None):
   return Response(res)
 
 
-@api_view(['GET'])
+@api_view(['GET','POST'])
 def adminAddNewOrder(request,format=None):
   if request.method == 'GET':
     data = {
@@ -444,6 +473,63 @@ def adminAddNewOrder(request,format=None):
             'data': data,
           }
     return Response(res)
+  
+  if request.method == 'POST':
+    data = request.data
+    if data['customer_email'] in user_data.objects.values_list('email',flat=True):
+      user = user_data.objects.get(email=data['customer_email'])
+    else:
+      user_data_data = user_data(
+                          name = data['customer_name'],
+                          email = data['customer_email'],
+                          phone_no = data['customer_phone'],
+                      )
+      user_data_data.save()
+      user = user_data.objects.get(email=data['customer_email'])
+      user_address_data = user_address(
+                            user_id = user.id,
+                            add_line_1 = data['customer_address'],
+                            phone_no = user.phone_no,
+                          )
+      user_address_data.save()
+    order_id_list = order_payment.objects.values_list('order_payment_id',flat=True)
+    order_payment_id = 'order_'+''.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(14))
+    while order_payment_id in order_id_list:
+      order_payment_id = 'order_'+''.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(14))
+
+    order_payment_data = order_payment(
+                          user_id = user.id,
+                          order_product = user.name,
+                          order_amount = data['grand_total'],
+                          order_payment_id = order_payment_id,
+                          admin_placed = True,
+                        )
+    order_payment_data.save()
+    
+    for i in data['items']:
+      order_details_data = order_details(
+                              order_id = order_payment_data.id,
+                              product_id = i['product_id'],
+                              size = i['metal_size'],
+                              weight = i['metal_weight'],
+                              diamond_quality = i['diamond_quality'],
+                              diamond_size = i['diamond_size'],
+                              quantity = i['quantity'],
+                              platinum = i['platinum'],
+                              gold = i['gold'],
+                              making_charges = i['making_charges_1'],
+                              diamond = i['diamond'],
+                              shipping = '100',
+                              tax = '3',
+                          )
+      order_details_data.save()
+    res = { 
+            'status':True,
+            'message':'Order placed'
+    }
+    return Response(res)
+
+      
   
 
 @api_view(['POST'])
@@ -510,14 +596,22 @@ def adminCreateOrderGetProductInfo(request,format=None):
         return str(round(eval(dc) + eval(mc) + eval(mkc)))
       def diamond_size_na(x):
         return 'N/A' if x == 'undefined' else x
+      def diamondActualPrice(dq,ds):
+        if dq != 'P':
+          return str(eval(diamond_pricing.objects.filter(diamond_quality = dq.strip(),diamond_size = ds.strip()).values().last()['diamond_pricing']))
+        else:
+          return '0'
+      
       metal_obj = metal_price.objects.values().last()
       try:
+        res['product_id'] = data['id']
         res['title'] = productNameFromId(data['id'])
         res['image'] = productImageFromId(data['id'])
         res['diamond_quality'] = data['diamond_quality']
         res['diamond_size'] = data['diamond_size'] if res['diamond_quality'] != 'P' else 'N/A'
         res['metal_size'] = data['size']
         res['metal_weight'] = data['weight']
+        res['quantity'] = data['quantity']
       except:
         res = {
                 'status':False,
@@ -528,8 +622,14 @@ def adminCreateOrderGetProductInfo(request,format=None):
       res['metal_charges'] = metalPrice(res['metal_size'],res['metal_weight'],metal_obj['platinum'],metal_obj['gold'],data['quantity'])
       res['making_charges_1'] = makingPrice(res['metal_size'],res['metal_weight'],metal_obj['making_charges'],data['quantity'])
       res['sub_total'] = subTotal(res['diamond_charges'],res['metal_charges'],res['making_charges_1'])
+      res['gold'] = metal_obj['gold']
+      res['platinum'] = metal_obj['platinum']
+      res['making_charges'] = metal_obj['making_charges']
+      res['diamond'] = diamondActualPrice(res['diamond_quality'],res['diamond_size'])
+      
 
       # items.append(res)
+      print(res)
       res = {
               'status':True,
               'items':res,

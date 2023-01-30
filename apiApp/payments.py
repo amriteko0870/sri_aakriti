@@ -33,7 +33,8 @@ def start_payment(request):
     order = order_payment(order_product=name, 
                   order_amount=amount, 
                   order_payment_id=payment['id'],
-                  user_id = user.id)
+                  user_id = user.id,
+                  admin_placed = False)
     order.save()
 
     order_id = order.id

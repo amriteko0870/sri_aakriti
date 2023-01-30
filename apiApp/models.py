@@ -5,21 +5,21 @@ from django.db import models
 class user_data(models.Model):
     name = models.TextField()
     email = models.TextField()
-    gender = models.TextField()
-    dob = models.TextField()
-    phone_code = models.TextField()
+    gender = models.TextField(blank=True)
+    dob = models.TextField(blank=True)
+    phone_code = models.TextField(blank=True)
     phone_no = models.TextField()
-    password = models.TextField()
-    token = models.TextField()
+    password = models.TextField(blank=True)
+    token = models.TextField(blank=True)
 
 class user_address(models.Model):
     user_id = models.TextField()
     add_line_1 = models.TextField()
     add_line_2 = models.TextField(null=True,blank=True)
     landmark = models.TextField(null=True,blank=True)
-    city = models.TextField()
-    state = models.TextField()
-    country = models.TextField()
+    city = models.TextField(null=True,blank=True)
+    state = models.TextField(null=True,blank=True)
+    country = models.TextField(null=True,blank=True)
     pincode = models.TextField()
     phone_no = models.TextField()
 
@@ -79,7 +79,8 @@ class order_payment(models.Model):
     isPaid = models.BooleanField(default=False)
     order_date = models.DateTimeField(auto_now=True)
     order_status = models.TextField(max_length=1,default='p',choices=(('p','p'),('c','c'),('d','d'),('o','o'))) # p placed # d delivered # c canceled # o on the way
-
+    admin_placed = models.BooleanField()
+    admin_accept_status = models.TextField(max_length=1,default='p',choices=(('p','p'),('a','a'),('d','d')))# p pending # d declined # a accepted 
 
 class order_details(models.Model):
     order_id = models.TextField()
