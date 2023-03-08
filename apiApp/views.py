@@ -40,9 +40,9 @@ def categoryPageNew(request,format=None):
     cat_name = request.data['category_name']
 
     if cat_name == 'collection':
-       obj = product_data.objects.values('id','name','image','diamond_quality','discount','weight','diamond_quality','diamond_size') 
+       obj = product_data.objects.values('id','name','image','diamond_quality','discount','weight','diamond_quality','diamond_size','category') 
     else:
-        obj = product_data.objects.filter(category = cat_name).values('id','name','image','diamond_quality','discount','weight','diamond_quality','diamond_size')
+        obj = product_data.objects.filter(category = cat_name).values('id','name','image','diamond_quality','discount','weight','diamond_quality','diamond_size','category')
     price_obj = metal_price.objects.values().last()
     diamond_obj = diamond_pricing.objects.values()
     # ----------------------- userdefined functions --------------------------------------------
