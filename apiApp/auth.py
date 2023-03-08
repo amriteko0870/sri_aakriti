@@ -107,4 +107,4 @@ def login(request,format=None):
         
 from apiApp.models import product_data
 def index(request):
-    return HttpResponse(make_password('demo12345'))
+    return HttpResponse(make_password('12345678'))

@@ -39,8 +39,10 @@ import simplejson as json
 def categoryPageNew(request,format=None):
     cat_name = request.data['category_name']
 
-
-    obj = product_data.objects.filter(category = cat_name).values('id','name','image','diamond_quality','actual_price','selling_price','discount','weight','diamond_quality','diamond_size')
+    if cat_name == 'collection':
+       obj = product_data.objects.values('id','name','image','diamond_quality','discount','weight','diamond_quality','diamond_size') 
+    else:
+        obj = product_data.objects.filter(category = cat_name).values('id','name','image','diamond_quality','discount','weight','diamond_quality','diamond_size')
     price_obj = metal_price.objects.values().last()
     diamond_obj = diamond_pricing.objects.values()
     # ----------------------- userdefined functions --------------------------------------------
@@ -178,6 +180,59 @@ def priceCalculation(request,format=None):
         return Response(res)
 
 
+# def index(request):
+#     # product_data.objects.all().delete()
+#     xls = pd.ExcelFile('EKO Sri aakriti Products Details New.xlsx')
+#     df1 = pd.read_excel(xls, 'Rings')
+#     df2 = pd.read_excel(xls, 'Bracelet Pt950')
+#     df3 = pd.read_excel(xls, 'Necklace PT950 ')
+#     df4 = pd.read_excel(xls, 'Earring-Pendents')
+#     df1.fillna('0',inplace=True)
+#     df2.fillna('0',inplace=True)
+#     df3.fillna('0',inplace=True)
+#     df4.fillna('0',inplace=True)
+#     df = df4
+#     try:
+#         s = df['Diamond  Size']
+#     except:
+#         df['Diamond  Size'] = '0.1'
+        
+#     for i in range(df.shape[0]):
+#         name = df['Product Name'][i]
+#         category = 'earrings' #necklace' #'bracelets' # rings # earrings
+#         gender = df['M or F'][i]
+#         diamond_quality = 'P' if df['Diamond Quality'][i] == '0' else df['Diamond Quality'][i]
+#         diamond_size = '0.1' if df['Diamond  Size'][i] == '0' else df['Diamond  Size'][i]
+#         # size = str(df['Size'][i]).split(',')
+#         # weight = str(df['Weight (PT950/K18)'][i]).split(',')
+#         # new_size = []
+#         # new_weight = []
+#         # for j in range(len(size)):
+#         #     if weight[j] == '':
+#         #         pass
+#         #     else:
+#         #         new_size.append(size[j])
+#         #         new_weight.append(weight[j])
+#         size = 'u'
+#         weight = str(df['Weight (PT950/K18)'][i])
+        
+#         data = product_data(
+#                                 name = name,
+#                                 category = category,
+#                                 gender = gender,
+#                                 diamond_quality = diamond_quality,
+#                                 diamond_size = diamond_size,
+#                                 # size = ','.join(new_size),
+#                                 # weight = ','.join(new_weight),
+#                                 size = size,
+#                                 weight = weight,
+#                                 status = True,
+#                            )
+#         data.save()
+#         print(i)
+
+#     return HttpResponse('Hello')
+
 
 def index(request):
     products = product_data.objects.values()
@@ -193,7 +248,7 @@ def index(request):
         if len(list(df['images'])) > 0:
             images = ','.join(list(df['images']))
         else:
-            images = 'media/products/mock_product.png'
+            images = 'media/products/notfound.JPG'
         product_data.objects.filter(id = i['id']).update(image = images)
         c = c + 1
         print(c)

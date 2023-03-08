@@ -30,12 +30,9 @@ class product_data(models.Model):
     gender = models.TextField(blank=True)
     diamond_quality = models.TextField(blank=True)
     diamond_size = models.TextField(blank=True)
-    diamond_peice = models.TextField(blank=True)
     diamond_wight = models.TextField(blank=True)
     size = models.TextField(blank=True)
     weight = models.TextField(blank=True)
-    actual_price = models.TextField(blank=True)
-    selling_price = models.TextField(blank=True)
     discount = models.TextField(blank=True)
     status = models.BooleanField()
 
