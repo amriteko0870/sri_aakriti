@@ -24,6 +24,8 @@ from rest_framework.response import Response
 
 #----------------------------models---------------------------------------------------
 from apiApp.models import user_data
+from apiApp.models import no_login_user
+from apiApp.models import user_cart
 
 #----------------------------extra---------------------------------------------------
 import simplejson as json
@@ -73,24 +75,28 @@ def signUp(request,format=None):
 def login(request,format=None):
     email = request.data['email']
     password = request.data['password']
+    no_login_token = request.data['no_login_token']
 
-    if email == 'amrit.s@ekoinfomatics.com':
-        res = {
-                    'status':True,
-                    'message':'login successfull',
-                    'token':"1shegdxyjqg1hn1j2yu1u2"
-            }
-        return Response(res)
+    # if email == 'amrit.s@ekoinfomatics.com':
+    #     res = {
+    #                 'status':True,
+    #                 'message':'login successfull',
+    #                 'token':"1shegdxyjqg1hn1j2yu1u2"
+    #         }
+    #     return Response(res)
         
 
     try:
         user = user_data.objects.get(email = email)
         if check_password(password,user.password):
+            if no_login_token != 'null':
+                no_user_id = no_login_user.objects.filter(token = no_login_token).values().last()['id']
+                user_cart.objects.filter(no_user_id = no_user_id).update(user_id = user.id)
             res = {
                     'status':True,
                     'message':'login successfull',
                     'token':user.token
-            }
+                  }
         else:
             res = {
                     'status':False,

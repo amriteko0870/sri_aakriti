@@ -12,6 +12,9 @@ class user_data(models.Model):
     password = models.TextField(blank=True)
     token = models.TextField(blank=True)
 
+class no_login_user(models.Model):
+    token = models.TextField()
+
 class user_address(models.Model):
     user_id = models.TextField()
     add_line_1 = models.TextField()
@@ -50,6 +53,7 @@ class user_cart(models.Model):
     diamond_quality = models.TextField()
     diamond_size = models.TextField()
     quantity = models.TextField()
+    no_user_id = models.TextField(blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
