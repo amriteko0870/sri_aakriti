@@ -329,7 +329,7 @@ def getUserWishlist(request,format=None):
         user_whishlist.objects.filter(product_id = product_id,user_id = user.id).delete()
 
         wishlist_array = user_whishlist.objects.filter(user_id = user.id).values_list('product_id',flat=True)
-        wishlist_data = product_data.objects.filter(id__in = wishlist_array).values('id','name','image','diamond_quality','actual_price','selling_price','discount')
+        wishlist_data = product_data.objects.filter(id__in = wishlist_array).values('id','name','image','diamond_quality','discount')
         # ----------------------- userdefined functions --------------------------------------------
         def func_image_first(value):
             return value.split(',')[0]

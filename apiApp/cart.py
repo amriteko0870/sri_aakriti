@@ -222,18 +222,27 @@ def getUserCart(request,format=None):
                                     'amount': str(round(estimated_total))
                                 },
                     }
+        def func_image_first(value):
+            return value.split(',')[0]
+        recomended_products = product_data.objects.values('id','name','image','diamond_quality','discount','weight','diamond_quality','diamond_size','category').order_by('?')
+        recomended_products = pd.DataFrame(recomended_products)
+        recomended_products['image'] = recomended_products['image'].apply(func_image_first)
+        recomended_products = recomended_products.to_dict(orient='records')[:15]
+        
         res = {
                 'status':True,
                 'message':'Cart generated',
                 'products':product_list,
-                'checkout_data': checkout
+                'checkout_data': checkout,
+                'recomended_products':recomended_products
             }
     else:
         res = {
                 'status':True,
                 'message':'Cart generated',
                 'products':[],
-                'checkout_data': []
+                'checkout_data': [],
+                'recomended_products':[]
             }
 
     return Response(res)
