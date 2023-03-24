@@ -69,10 +69,4 @@ urlpatterns = [
     path('setMetalPrice',admin_views.setMetalPrice,name='setMetalPrice'),
     path('setDiamondPrice',admin_views.setDiamondPrice,name='setDiamondPrice'),
     
-    
-    
-    
-
-    # path('ind',views.index,name='index'),
-
 ] +static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)

@@ -234,23 +234,27 @@ def priceCalculation(request,format=None):
 #     return HttpResponse('Hello')
 
 
-def index(request):
-    products = product_data.objects.values()
-    def img_path(x):
-        return 'media/products/'+x
-    c = 0
-    for i in products:
-        name = i['name']
-        products_list = os.listdir('media/products')
-        df = pd.DataFrame({'images':products_list})
-        df = df.loc[df['images'].str.contains(name, case=False)]
-        df['images'] = df['images'].apply(img_path)
-        if len(list(df['images'])) > 0:
-            images = ','.join(list(df['images']))
-        else:
-            images = 'media/products/notfound.JPG'
-        product_data.objects.filter(id = i['id']).update(image = images)
-        c = c + 1
-        print(c)
+# def index(request):
+#     products = product_data.objects.values()
+#     def img_path(x):
+#         return 'media/products/'+x
+#     c = 0
+#     for i in products:
+#         name = i['name']
+#         products_list = os.listdir('media/products')
+#         df = pd.DataFrame({'images':products_list})
+#         df = df.loc[df['images'].str.contains(name, case=False)]
+#         df['images'] = df['images'].apply(img_path)
+#         if len(list(df['images'])) > 0:
+#             images = ','.join(list(df['images']))
+#         else:
+#             images = 'media/products/notfound.JPG'
+#         product_data.objects.filter(id = i['id']).update(image = images)
+#         c = c + 1
+#         print(c)
 
-    return HttpResponse('Hello')
+#     return HttpResponse('Hello')
+
+def index(request):
+    product_data.objects.filter(image = 'media/products/notfound.JPG').delete()
+    return HttpResponse('hello world')
