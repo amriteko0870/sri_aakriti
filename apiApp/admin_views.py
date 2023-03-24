@@ -656,3 +656,116 @@ def adminCreateOrderFinalPriceCalculation(request,format=None):
             'grand_total':str(sum)
           }
     return Response(res)
+  
+@api_view(['POST'])
+def getMetalPrice(request):
+  if request.method == 'POST':
+    metal_obj = metal_price.objects.values().last()
+    metal_data = [
+                    {
+                      'id':1,
+                      'title':'Gold',
+                      'value':metal_obj['gold']
+                    },
+                    {
+                      'id':2,
+                      'title':'Platinum',
+                      'value':metal_obj['platinum']
+                    },
+                    {
+                      'id':3,
+                      'title':'Making Charges',
+                      'value':metal_obj['making_charges']
+                    },
+                  ]
+    
+    res = {
+            'status':True,
+            'message':'Metal Price generated successfully',
+            'metal_data': metal_data,
+          }
+    return Response(res)
+  
+@api_view(['POST'])
+def getDiamondPrice(request):
+  if request.method == 'POST':
+    diamond_obj = diamond_pricing.objects.values()
+    diamond_G_size_1_9 = diamond_obj.filter(diamond_quality = 'GH-VS/SI',diamond_size = '0.09').last()['diamond_pricing']
+    diamond_G_size_10 = diamond_obj.filter(diamond_quality = 'GH-VS/SI',diamond_size = '0.10').last()['diamond_pricing']
+    diamond_G_size_20 = diamond_obj.filter(diamond_quality = 'GH-VS/SI',diamond_size = '0.20').last()['diamond_pricing']
+    diamond_E_size_1_9 = diamond_obj.filter(diamond_quality = 'EF-VVS',diamond_size = '0.09').last()['diamond_pricing']
+    diamond_E_size_10 = diamond_obj.filter(diamond_quality = 'EF-VVS',diamond_size = '0.10').last()['diamond_pricing']
+    diamond_E_size_20 = diamond_obj.filter(diamond_quality = 'EF-VVS',diamond_size = '0.20').last()['diamond_pricing']
+    diamond_data = [
+                    {
+                      'id':1,
+                      'title':'GH-VS/SI (0.01 to 0.09)',
+                      'value':diamond_G_size_1_9
+                    },
+                    {
+                      'id':2,
+                      'title':'GH-VS/SI (0.10)',
+                      'value':diamond_G_size_10
+                    },
+                    {
+                      'id':3,
+                      'title':'GH-VS/SI (0.20)',
+                      'value':diamond_G_size_20
+                    },
+                    {
+                      'id':4,
+                      'title':'EF-VVS (0.01 to 0.09)',
+                      'value':diamond_E_size_1_9
+                    },
+                    {
+                      'id':5,
+                      'title':'EF-VVS (0.10)',
+                      'value':diamond_E_size_10
+                    },
+                    {
+                      'id':6,
+                      'title':'EF-VVS (0.20)',
+                      'value':diamond_G_size_20
+                    },
+                 ]
+    res = {
+        'status':True,
+        'message':'Diamond price generated successfully',
+        'diamond_data':diamond_data,
+      }
+    return Response(res)
+  
+@api_view(['POST'])
+def setMetalPrice(request):
+  if request.method == 'POST':
+    data = request.data 
+    metal_price.objects.values()\
+                        .update(
+                                    platinum = data[0]['value'],
+                                    gold = data[1]['value'],
+                                    making_charges = data[2]['value']
+                                )
+    res = {
+            'status':True,
+            'message':'Metal price updated successfully'
+          }
+    return Response(res)
+  
+@api_view(['POST'])
+def setDiamondPrice(request):
+  if request.method == 'POST':
+    data = request.data 
+    d_1_9 = ['0.01','0.02','0.03','0.04','0.05','0.06','0.07','0.08','0.09']
+    d_10 = ['0.10']
+    d_20 = ['0.20']
+    diamond_pricing.objects.filter(diamond_quality = 'GH-VS/SI',diamond_size__in = d_1_9).update(diamond_pricing = data[0]['value'])
+    diamond_pricing.objects.filter(diamond_quality = 'GH-VS/SI',diamond_size__in = d_10).update(diamond_pricing = data[1]['value'])
+    diamond_pricing.objects.filter(diamond_quality = 'GH-VS/SI',diamond_size__in = d_20).update(diamond_pricing = data[2]['value'])
+    diamond_pricing.objects.filter(diamond_quality = 'EF-VVS',diamond_size__in = d_1_9).update(diamond_pricing = data[3]['value'])
+    diamond_pricing.objects.filter(diamond_quality = 'EF-VVS',diamond_size__in = d_10).update(diamond_pricing = data[4]['value'])
+    diamond_pricing.objects.filter(diamond_quality = 'EF-VVS',diamond_size__in = d_20).update(diamond_pricing = data[5]['value'])
+    res = {
+            'status':True,
+            'message':'Diamond price updated successfully'
+          }
+    return Response(res)

@@ -64,6 +64,10 @@ urlpatterns = [
     path('adminCreateOrderSelectProduct',admin_views.adminCreateOrderSelectProduct,name='adminCreateOrderSelectProduct'),
     path('adminCreateOrderGetProductInfo',admin_views.adminCreateOrderGetProductInfo,name='adminCreateOrderGetProductInfo'),
     path('adminCreateOrderFinalPriceCalculation',admin_views.adminCreateOrderFinalPriceCalculation,name='adminCreateOrderFinalPriceCalculation'),
+    path('getMetalPrice',admin_views.getMetalPrice,name='getMetalPrice'),
+    path('getDiamondPrice',admin_views.getDiamondPrice,name='getDiamondPrice'),
+    path('setMetalPrice',admin_views.setMetalPrice,name='setMetalPrice'),
+    path('setDiamondPrice',admin_views.setDiamondPrice,name='setDiamondPrice'),
     
     
     

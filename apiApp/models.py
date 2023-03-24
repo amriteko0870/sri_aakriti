@@ -10,6 +10,7 @@ class user_data(models.Model):
     phone_code = models.TextField(blank=True)
     phone_no = models.TextField()
     password = models.TextField(blank=True)
+    user_type = models.TextField(default='u')
     token = models.TextField(blank=True)
 
 class no_login_user(models.Model):
